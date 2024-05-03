@@ -43,3 +43,32 @@ function getDataFromDB($query, $filename, $isBlob, $conn)
         }
     }
 }
+function getAntag_Gruppe($conn)
+{
+    $query = "SELECT Gruppe As 'Gruppe', AntragsLink As 'Link' FROM anträge, gruppen WHERE anträge.Gruppe_ID = gruppen.Gruppen_ID;";
+    $file_name = '../controller/query_result_Antag.json';
+    getDataFromDB($query, $file_name, false, $conn);
+}
+
+function getArtikel($conn)
+{
+    $query = "SELECT ArtikelTitel As 'Titel', ArtikelDatum As 'Datum', ArtikelBild As 'Bild', ArtikelText As 'ArtikelText' From Artikel;";
+    $file_name = '../controller/query_result_Artikel.json';
+    getDataFromDB($query, $file_name, true, $conn);
+}
+
+function getPersonenDaten($conn)
+{
+    $query = "SELECT p.Pers_Name As 'Name', p.Pers_Vorname As 'Vorname',  p.Pers_Geb_Datum As 'Geb. Datum', o.Ort  As 'Geb. Ort', a.Adresse_Hausnummer As 'Hausnummer', s.Strasse As 'Strasse', o.Ort As 'Ort', o.PLZ As 'PLZ'
+    From personen p
+    JOIN adressen a
+    ON p.Pers_Adress_ID = a.Adresse_ID
+    JOIN orte o
+    ON a.Ort_ID = o.Ort_ID
+    JOIN personen
+    ON personen.Pers_Geb_Ort_ID = o.Ort_ID
+    JOIN strassen s
+    ON a.Strasse_ID = s.Strasse_ID;";
+    $file_name = "../controller/query_result_PersonenDaten.json";
+    getDataFromDB($query, $file_name, false, $conn);
+}

@@ -72,3 +72,56 @@ function getPersonenDaten($conn)
     $file_name = "../controller/query_result_PersonenDaten.json";
     getDataFromDB($query, $file_name, false, $conn);
 }
+
+// Eintragen der Daten bei neue Registrierung 
+function registPerson()
+{
+    $vorname = $_POST["vorname"];
+    $nachname = $_POST["nachname"];
+    $geburtsdatum = $_POST["geburtsdatum"];
+    $geburtsort = $_POST["geburtsort"];
+    $straße = $_POST["straße"];
+    $hausnummer = $_POST["hausnummer"];
+    $plz = $_POST["plz"];
+    $ort = $_POST["ort"];
+    $email = $_POST["email"];
+    $passwort = $_POST['password'];
+
+    //Statement zum prüfen ob ein User => Vor- Nachname, Email schon in der DB vorhanden ist
+    $pers_ID = getPersId($vorname, $nachname, $email);
+    var_dump($pers_ID);
+    // wenn ja darf er sich damit nicht mehr registrieren
+    if (!empty($pers_ID)) {
+?>
+<script>
+var error_message = "Leider ist ein Fehler Aufgetreten. Ihr Benutzername oder Email wird schon verwendet";
+alert(error_message);
+</script>
+<?php
+        return;
+    } else {
+        //Statement zum auslesen der Geburtsorts ID
+        $gebOrt_ID = getGebOrtId($geburtsort);
+        var_dump($gebOrt_ID);
+        //Statement zum auslesen der Strassen ID
+        $strasse_Id = getStrassenID($straße);
+        var_dump($strasse_Id);
+        //Statement zum auslesen der Orts ID
+        $orts_Id = getOrtID($ort, $plz);
+        var_dump($orts_Id);
+        //Statement zum prüfen ob es diese Adresse Kombi schon gibt
+        $adres_ID = getAdressId($hausnummer, $strasse_Id, $orts_Id);
+        var_dump($adres_ID);
+        //Statement zum einfügen der neuen Person
+        $isPersonRegistered = insertPerson(
+            $nachname,
+            $vorname,
+            $email,
+            $geburtsdatum,
+            $gebOrt_ID,
+            $adres_ID,
+            $passwort,
+        );
+        var_dump($isPersonRegistered);
+    }
+}
